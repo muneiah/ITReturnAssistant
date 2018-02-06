@@ -3,16 +3,27 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { InsuranceComponent } from './insurance/insurance.component';
+import { SodexoComponent } from './sodexo/sodexo.component';
+import {ReturnsService} from "./service/returns.service";
+import { SavingsComponent } from './savings/savings.component';
+import { HraComponent } from './hra/hra.component';
+import { PreviewComponent } from './preview/preview.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    InsuranceComponent,
+    SodexoComponent,
+    SavingsComponent,
+    HraComponent,
+    PreviewComponent
   ],
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [ReturnsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
