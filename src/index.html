@@ -7,6 +7,13 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script type = "text/javascript" src = "https://code.jquery.com/jquery-2.1.1.min.js">
+  </script>
+  <script src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js">
+  </script>
+  <link rel="stylesheet prefetch" href="https://fonts.googleapis.com/css?family=Open+Sans:600">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
 </head>
 <body>
 <app-root>
@@ -17,4 +24,20 @@
   </div>
 </app-root>
 </body>
+<script>
+  // $(document).ready(function() {
+  //   $('select').material_select();
+  // });
+  $(document).ready(function() {
+    $('.tooltipped').tooltip({delay: 50});
+  });
+  $(document).ready(function(){
+    $('.tap-target').tapTarget('open');
+  });
+  $(document).ready(function(){
+    // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+    $('.modal').modal();
+  });
+
+</script>
 </html>

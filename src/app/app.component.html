@@ -4,21 +4,26 @@
       <a class="navbar-brand" href="#"> <span class="glyphicon glyphicon-cog"></span> IT Return Assistant</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="{{manage == 'Insurance' ? 'active' : ''}}"><a (click)="select('Insurance')" href="#Insurance"><span class="glyphicon glyphicon-user"></span> Insurance</a></li>
-      <li class="{{manage == 'Sodexo' ? 'active' : ''}}"><a (click)="select('Sodexo')" href="#Sodexo"><span class="glyphicon glyphicon-wrench"></span> Sodexo</a></li>
-      <li class="{{manage == 'Savings' ? 'active' : ''}}"><a (click)="select('Savings')" href="#Savings"><span class="glyphicon glyphicon-wrench"></span> Savings</a></li>
-      <li class="{{manage == 'HRA' ? 'active' : ''}}"><a (click)="select('HRA')" href="#HRA"><span class="glyphicon glyphicon-wrench"></span> HRA</a></li>
+      <li class="{{manage == 'declaration' ? 'active' : ''}}"><a (click)="select('declaration')" href="#"><span class="glyphicon glyphicon-user"></span> Declaration</a></li>
+      <!--<li class="{{manage == 'Insurance' ? 'active' : ''}}"><a (click)="select('Insurance')" href="#Insurance"><span class="glyphicon glyphicon-user"></span> Insurance</a></li>-->
+      <!--<li class="{{manage == 'Sodexo' ? 'active' : ''}}"><a (click)="select('Sodexo')" href="#Sodexo"><span class="glyphicon glyphicon-wrench"></span> Sodexo</a></li>-->
+      <!--<li class="{{manage == 'Savings' ? 'active' : ''}}"><a (click)="select('Savings')" href="#Savings"><span class="glyphicon glyphicon-wrench"></span> Savings</a></li>-->
+      <!--<li class="{{manage == 'HRA' ? 'active' : ''}}"><a (click)="select('HRA')" href="#HRA"><span class="glyphicon glyphicon-wrench"></span> HRA / Home Loan</a></li>-->
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li class="{{manage == 'Preview' ? 'active' : ''}}"><a (click)="select('Preview')" href="#Preview"><span class="glyphicon glyphicon-flash"></span> Preview</a></li>
+      <!--<li class="{{manage == 'Preview' ? 'active' : ''}}"><a (click)="select('Preview')" href="#Preview"><span class="glyphicon glyphicon-flash"></span> Preview</a></li>-->
     </ul>
   </div>
 </nav>
 
 <div class="container">
+  <app-declaration *ngIf="manage == 'declaration'">Loading declaration..</app-declaration>
   <app-insurance *ngIf="manage == 'Insurance'">Loading insurance..</app-insurance>
   <app-sodexo *ngIf="manage == 'Sodexo'">Loading sodexo..</app-sodexo>
   <app-savings *ngIf="manage == 'Savings'">Loading savings..</app-savings>
   <app-hra *ngIf="manage == 'HRA'">Loading hra..</app-hra>
   <app-preview *ngIf="manage == 'Preview'">Loading preview..</app-preview>
+</div>
+<div class="row">
+
 </div>

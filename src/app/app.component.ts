@@ -8,7 +8,7 @@ import {ReturnsService} from "./service/returns.service";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  manage: string;
+  manage: string = 'declaration';
   processing: boolean;
 
   constructor(private rs: ReturnsService) { }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ReturnsService} from '../service/returns.service';
 
 @Component({
   selector: 'app-savings',
@@ -8,6 +9,10 @@ import { Component, OnInit } from '@angular/core';
 export class SavingsComponent implements OnInit {
 
   constructor() { }
+
+  getTypes() {
+    return ReturnsService.typesOfSavings;
+  }
 
   ngOnInit() {
   }

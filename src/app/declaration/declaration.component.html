@@ -1,0 +1,228 @@
+<div class="row" xmlns="">
+  <span class="">{{errorMessage}}</span>
+  <form [formGroup]="declarationForm" class="">
+    <div class="form-group well well-lg">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="id" type="text" class="validate form-control" required formControlName="id">
+          <label for="id">Employee Id</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="password" type="password" class="validate form-control" required formControlName="password">
+          <label for="password">Password</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <label class="center-block">Year:
+            <select class="form-control" formControlName="year" required onchange="fetchRecords()">
+              <option *ngFor="let year of years" [value]="year">{{year}}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="email" type="email" class="validate form-control" required formControlName="email">
+          <label for="email">Employee Email</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="name" type="text" class="validate form-control" required formControlName="name">
+          <label for="name">Employee Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="pan" type="text" class="validate form-control" required maxlength="10" formControlName="pan">
+          <label for="pan">PAN Number</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <label class="center-block">Location:
+            <select class="form-control" formControlName="location" required>
+              <option *ngFor="let location of locations" [value]="location">{{location}}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="rent" type="number" class="validate form-control" formControlName="rent">
+          <label for="rent">Rent per Year</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="ownerPan" type="text" class="validate form-control" maxlength="10" formControlName="ownerPan" required="{{declarationForm.value.rent >= 100000}}">
+          <label for="ownerPan">Owner Pan Number(if rent exceeds 1 lac per year)</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <label class="center-block">Sodexo:
+            <select class="form-control" formControlName="sodexo" required>
+              <option *ngFor="let sodexo of sodexoAmounts" [value]="sodexo">{{sodexo}}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="homeLoanInterest" type="number" class="validate form-control" max=200000 formControlName="homeLoanInterest">
+          <label for="homeLoanInterest">House Loan Interest</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="homeLoanPrincipal" type="number" class="validate form-control" max=150000 formControlName="homeLoanPrincipal">
+          <label for="homeLoanPrincipal">House Loan Principal</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="phoneBill" type="number" class="validate tooltipped form-control" max=18000 data-position="top" data-delay="50" data-class="rounded" data-tooltip="" onfocus="Materialize.toast('Help ....', 4000, 'rounded')" formControlName="phoneBill">
+          <label for="phoneBill">Telephone & Internet</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="savings" type="number" class="validate form-control" max=150000 formControlName="savings">
+          <label for="savings">Savings (80C)</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="insurance" type="number" class="validate form-control" max=25000 formControlName="insurance">
+          <label for="insurance">Medical Insurence (80D)</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="NPSPension" type="number" class="validate form-control" max=50000 formControlName="NPSPension">
+          <label for="NPSPension">NPS Atal Pension Yojana(80CCD)</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="educationLoanInterest" type="number" class="validate form-control" formControlName="educationLoan">
+          <label for="educationLoanInterest">Education Loan Interest(80E)</label>
+        </div>
+      </div>
+      <div class="row">
+        <a class="btn">Save</a>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="toc-wrapper pinned" style="top: 0px;right: 10px">
+  <div class="card-panel teal white">
+    <form [formGroup]="ctcForm" class="well well-lg" (ngSubmit)="showTaxableAmount();">
+      <div class="form-group well well-lg">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="tax" *ngIf="taxable > 0">
+              <div class="center-block grey-text">Appx Taxable Income: <strong class="green-text">{{taxable | currency:"₹":0}}</strong></div><br/>
+              <div class="center-block grey-text">Appx Tax Amount: <strong class="green-text">{{tax | currency:"₹":0}}</strong></div><br/>
+              <div class="center-block grey-text" *ngIf="(initialTax - tax) > 0">You have saved <strong class="green-text">{{(initialTax - tax) | currency:"₹":0}}</strong> amount</div><br/>
+            </div>
+            <label class="center-block">CTC:
+              <input id="ctc" type="password" class="validate" min="250000" value="900000" class="form-control" formControlName="ctc" (focus)="showhide(true)" (focusout)="showhide(false)">
+            </label>
+            <label class="center-block">
+              <div class="switch">
+                <label>
+                  Technologies
+                  <input type="checkbox" class="form-control" formControlName="consultingPayRole">
+                  <span class="lever"></span>
+                  Consulting
+                </label>
+              </div>
+            </label>
+            <button type="submit" class="btn btn-success">Get suggestions</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <a *ngIf="isValid(suggestions.basic)" class="waves-effect waves-light btn-small modal-trigger right tooltipped" href="#modal1" data-position="left" data-delay="50" data-tooltip="Pay Structure"><i class="material-icons">kitchen</i></a>
+    <div class="row" style="font-size: 12px">
+      <p *ngIf="ctcLess" class="red-text">No need to submit as your CTC < 250000</p>
+      <div class="" *ngIf="!ctcLess">
+        <p class="grey-text" *ngIf="isValid(suggestions.rent)">Suggested Rent: <strong class="green-text">{{suggestions.rent | currency:"₹":0}} ({{getMonth(suggestions.rent)  | currency:"₹":0}} per Month)</strong></p>
+        <p class="grey-text" *ngIf="isValid(suggestions.phoneBills)">Suggested Phone & Internet Bills: <strong class="green-text">{{suggestions.phoneBills | currency:"₹":0}}</strong></p>
+        <p class="grey-text" *ngIf="isValid(suggestions.sodexo)">Suggested Sodexo: <strong class="green-text">{{suggestions.sodexo | currency:"₹":0}} ({{getMonth(suggestions.sodexo)  | currency:"₹":0}} per Month)</strong></p>
+        <p class="grey-text" *ngIf="isValid(suggestions.savings)">Suggested Savings(80C): <strong class="green-text">{{suggestions.savings | currency:"₹":0}}</strong></p>
+        <p class="grey-text" *ngIf="isValid(suggestions.otherInsurance)">Suggested Insurance(80D): <strong class="green-text">{{suggestions.otherInsurance | currency:"₹":0}}</strong></p>
+        <p class="grey-text" *ngIf="isValid(suggestions.NPSPension)">Suggested NPS Atal Pension Plan(80CCD): <strong class="green-text">{{suggestions.NPSPension | currency:"₹":0}}</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="modal1" class="modal modal-fixed-footer z-depth-4 modal-close">
+  <div class="modal-content">
+    <h4>Approximate Pay Structure</h4>
+    <table class="striped bordered responsive-table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Monthly</th>
+        <th>Yearly</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th>Basic</th>
+        <td>{{getMonth(suggestions.basic) | currency:"₹":0}}</td>
+        <td>{{suggestions.basic | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>House Rent Allowance</th>
+        <td>{{getMonth(suggestions.hra) | currency:"₹":0}}</td>
+        <td>{{suggestions.hra | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Transport & Medical Allowance</th>
+        <td>{{getMonth(suggestions.stand) | currency:"₹":0}}</td>
+        <td>{{suggestions.stand | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Telephone & Internet Allowance</th>
+        <td>{{getMonth(suggestions.phone) | currency:"₹":0}}</td>
+        <td>{{suggestions.phone | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Special Allowance</th>
+        <td>{{getMonth(suggestions.spl) | currency:"₹":0}}</td>
+        <td>{{suggestions.spl | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Provident Fund</th>
+        <td>{{getMonth(suggestions.pf) | currency:"₹":0}}</td>
+        <td>{{suggestions.pf | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Professional Tax</th>
+        <td>{{getMonth(suggestions.pt) | currency:"₹":0}}</td>
+        <td>{{suggestions.pt | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Insurance</th>
+        <td>--</td>
+        <td>{{suggestions.insurance | currency:"₹":0}}</td>
+      </tr>
+      <tr>
+        <th>Gratuity</th>
+        <td>--</td>
+        <td>{{suggestions.gratuity | currency:"₹":0}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat "><i class="material-icons">close</i></a>
+  </div>
+</div>

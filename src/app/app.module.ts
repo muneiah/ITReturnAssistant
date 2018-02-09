@@ -9,7 +9,8 @@ import {ReturnsService} from "./service/returns.service";
 import { SavingsComponent } from './savings/savings.component';
 import { HraComponent } from './hra/hra.component';
 import { PreviewComponent } from './preview/preview.component';
-
+import {ReactiveFormsModule} from '@angular/forms';
+import { DeclarationComponent } from './declaration/declaration.component';
 
 @NgModule({
   declarations: [
@@ -18,10 +19,12 @@ import { PreviewComponent } from './preview/preview.component';
     SodexoComponent,
     SavingsComponent,
     HraComponent,
-    PreviewComponent
+    PreviewComponent,
+    DeclarationComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    ReactiveFormsModule
   ],
   providers: [ReturnsService],
   bootstrap: [AppComponent]
