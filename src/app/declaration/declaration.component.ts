@@ -104,7 +104,9 @@ export class DeclarationComponent implements OnInit {
   get taxable(): number {
     let taxable: number = 0;
     if (this.ctcForm.value.ctc > 250000) {
-      taxable = this.ctcForm.value.ctc - (this.suggestions.insurance + this.declarationForm.value.sodexo * 12 + this.suggestions.pf) - 250000;
+      let gross: number = this.suggestions.basic + this.suggestions.stand + this.suggestions.phone + this.suggestions.spl + this.suggestions.hra;
+      let remaining: number = gross - this.suggestions.stand;
+      taxable = remaining - this.suggestions.pt - (this.declarationForm.value.sodexo * 12);
       let save: number = 0;
       let basic: number = ((this.isValid(this.suggestions.basic) ? this.suggestions.basic : 0) * 0.1);
       save = save + ((this.declarationForm.value.rent > 0 && this.declarationForm.value.rent > basic) ? Math.min(this.suggestions.hra, this.declarationForm.value.rent, (this.declarationForm.value.rent - basic)) : 0);
@@ -141,6 +143,7 @@ export class DeclarationComponent implements OnInit {
 
   showTaxableAmount() {
     this.start = true;
+    this.toast = false;
     this.resetSuggestions();
     this.ctcLess = this.ctcForm.value.ctc <= 250000;
     this.updatePayStructure();
@@ -224,6 +227,20 @@ export class DeclarationComponent implements OnInit {
 
   isValid(val) {
     return (isUndefined(val) ? false : (val > 0));
+  }
+
+  rentError() {
+    if (this.declarationForm.value.rent >= 180000) {
+      document.getElementById('rent').setAttribute('data-position', 'top');
+      document.getElementById('rent').setAttribute('data-delay', '50');
+      document.getElementById('rent').setAttribute('data-class', 'rounded');
+      document.getElementById('rent').setAttribute('data-tooltip', 'You have to submit rental agreement, if rent is more than 1.8 lacks!!');
+    } else {
+      document.getElementById('rent').removeAttribute('data-position');
+      document.getElementById('rent').removeAttribute('data-delay');
+      document.getElementById('rent').removeAttribute('data-class');
+      document.getElementById('rent').removeAttribute('data-tooltip');
+    }
   }
 
   resetSuggestions() {
