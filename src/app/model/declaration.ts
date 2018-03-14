@@ -5,7 +5,7 @@ export class Declaration {
   homeLoanPrincipal: number;
   savings: number;
   insurance: number;
-  NPSPension: number;
+  npspension: number;
   educationLoan: number;
   phoneBill: number;
   ownerPan: string;

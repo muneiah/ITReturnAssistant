@@ -1,228 +1,257 @@
-<div class="row" xmlns="">
-  <span class="">{{errorMessage}}</span>
-  <form [formGroup]="declarationForm" class="">
-    <div class="form-group well well-lg">
+<div class="row">
+  <form [formGroup]="declarationForm" class="container-fluid"  (ngSubmit)="saveUser();">
+    <div class="form-group">
       <div class="row">
-        <div class="input-field col s6">
-          <input id="id" type="text" class="validate form-control" required formControlName="id">
-          <label for="id">Employee Id</label>
-        </div>
+        <span *ngIf="errorMessage != '' && errorMessage.indexOf('Hurry') === 0" class="alert alert-success" id="staggered"><strong>{{errorMessage}}</strong></span>
+        <span *ngIf="errorMessage != '' && errorMessage.indexOf('Hurry') === -1" class="alert alert-danger" id="staggered-test"><strong>{{errorMessage}}</strong></span>
       </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="password" type="password" class="validate form-control" required formControlName="password">
-          <label for="password">Password</label>
-        </div>
+      <div class="input-group col-sm-3">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-king"></i></span>
+        <input id="id" type="text" class="validate form-control" required formControlName="id" [attr.disabled]="isUpdateInfo||isNewUser?'':null" placeholder="Employee Id" minlength="4" aria-describedby="idHelpBlock">
+      </div><small id="idHelpBlock" class="text-muted">&emsp;&emsp;&emsp;&emsp;Your Id must be 4 characters long.</small><br>
+      <div *ngIf="isUpdateInfo||isNewUser;else other_content" class="input-group col-sm-3">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+        <input id="password1" type="password" class="form-control validate" formControlName="password" required name="password" placeholder="Password" minlength="5" aria-describedby="passwordHelpBlock" [attr.disabled]="isUpdateInfo||isNewUser?'':null">
       </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <label class="center-block">Year:
-            <select class="form-control" formControlName="year" required onchange="fetchRecords()">
-              <option *ngFor="let year of years" [value]="year">{{year}}</option>
-            </select>
-          </label>
+      <ng-template #other_content><div class="input-group col-sm-3">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+        <input id="password2" type="password" class="form-control validate" formControlName="password" required name="password" placeholder="Password" minlength="5" data-toggle="password" aria-describedby="passwordHelpBlock">
+      </div></ng-template>
+      <small id="passwordHelpBlock" class="text-muted">&emsp;&emsp;&emsp;&emsp;Your password must be 5 characters long.</small><br>
+      <div class="input-group col-sm-3" *ngIf="declarationForm.controls.id.valid && declarationForm.controls.password.valid">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        <select class="form-control" formControlName="year" required (change)="getUser()" aria-describedby="yearHelpBlock">
+          <option *ngFor="let year of years" [value]="year.id">{{year.id}}</option>
+        </select>
+      </div><small id="yearHelpBlock" class="form-text text-muted" *ngIf="declarationForm.controls.id.valid && declarationForm.controls.password.valid">&emsp;&emsp;&emsp;&emsp;Financial Year</small><br>
+      <div *ngIf="declarationForm.value.year !== ''">
+        <div class="input-group col-sm-3" *ngIf="!isUpdateInfo">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+          <input id="email" type="text" class="form-control validate" formControlName="email" name="email" placeholder="Email" [attr.disabled]="isUpdateInfo?'':null" aria-describedby="userEmailHelpBlock">
+          <span class="input-group-addon">@osius.com</span>
+        </div><small *ngIf="!isUpdateInfo" id="userEmailHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;User Email</small><br *ngIf="!isUpdateInfo">
+        <div class="input-group col-sm-3" *ngIf="!isUpdateInfo">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+          <input id="name" type="text" class="validate form-control" required formControlName="name" placeholder="Full Name" [attr.disabled]="isUpdateInfo?'':null" aria-describedby="fullNameHelpBlock">
+        </div><small *ngIf="!isUpdateInfo" id="fullNameHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Full Name</small><br *ngIf="!isUpdateInfo">
+        <div class="input-group col-sm-3" *ngIf="!isUpdateInfo">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-credit-card"></i></span>
+          <input id="pan" type="text" class="validate form-control" required maxlength="10" formControlName="pan" [attr.disabled]="isUpdateInfo?'':null" placeholder="PAN Number" aria-describedby="PANHelpBlock">
+        </div><small *ngIf="!isUpdateInfo" id="PANHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;PAN Number</small><br *ngIf="!isUpdateInfo">
+        <div class="input-group col-sm-3">
+          <fieldset>
+            <div class="switch-toggle switch-candy-blue">
+              <ng-container *ngFor="let location of locations">
+                <input [id]="location" name="location" type="radio" [value]="location" formControlName="location" [attr.checked]="declarationForm.value.location === location">
+                <label [for]="location" onclick="">{{location}}</label>
+              </ng-container>
+              <a></a>
+            </div>
+          </fieldset>
+        </div><small id="locationHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Location</small><br>
+        <!--<div class="input-group col-sm-3">-->
+          <!--<span class="input-group-addon"><i class="glyphicon glyphicon-map-marker"></i></span>-->
+          <!--<select class="form-control" formControlName="location" required [attr.disabled]="isActiveYear?null:''" aria-describedby="locationHelpBlock">-->
+            <!--<option *ngFor="let location of locations" [value]="location">{{location}}</option>-->
+          <!--</select>-->
+        <!--</div>-->
+        <div class="input-group col-sm-3">
+          <fieldset>
+            <div class="switch-toggle switch-candy-blue">
+              <ng-container *ngFor="let sodexo of sodexoAmounts">
+                <input [id]="sodexo" name="sodexo" type="radio" [value]="sodexo" formControlName="sodexo" [attr.checked]="declarationForm.value.sodexo === sodexo">
+                <label [for]="sodexo" onclick="">{{sodexo}}</label>
+              </ng-container>
+              <a></a>
+            </div>
+          </fieldset>
+        </div><small id="sodexoHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Sodexo Amount</small><br>
+        <!--<div class="input-group col-sm-3">-->
+          <!--<span class="input-group-addon"><i class="glyphicon glyphicon-barcode"></i></span>-->
+          <!--<select class="form-control" formControlName="sodexo" [attr.disabled]="isActiveYear?null:''" aria-describedby="sodexoHelpBlock">-->
+            <!--<option *ngFor="let sodexo of sodexoAmounts" [value]="sodexo">{{sodexo}}</option>-->
+          <!--</select>-->
+        <!--</div><small id="sodexoHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Sodexo Amount</small><br>-->
+        <div class="input-group col-sm-8">
+          <div class="form-row">
+            <div class="input-group col-md-4 mb-3">
+              <div class="input-group-addon">₹</div>
+              <input id="rent" type="number" class="validate form-control" formControlName="rent" [attr.disabled]="isActiveYear?null:''" placeholder="House Rent" aria-describedby="rentPerYearBlock">
+              <div class="input-group-addon">.00</div>
+            </div>
+            <div *ngIf="declarationForm.value.rent > 100000" class="input-group col-md-4 mb-3">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-credit-card"></i></span>
+              <input id="ownerPan" type="text" class="validate form-control" maxlength="10" formControlName="ownerPan" required="{{declarationForm.value.rent > 100000}}" [attr.disabled]="isActiveYear?null:''" placeholder="Owner PAN" aria-describedby="ownerPanHelpBlock">
+            </div>
+          </div><small id="rentPerYearBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;House Rent per Year&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{declarationForm.value.rent > 100000 ? 'Owner PAN Number' : null}}</small>
+        </div><br>
+        <div class="input-group col-sm-8">
+          <div class="form-row">
+            <div class="input-group col-md-4 mb-3">
+              <div class="input-group-addon">₹</div>
+              <input id="homeLoanInterest" type="number" class="validate form-control" max=200000 formControlName="homeLoanInterest" [attr.disabled]="isActiveYear?null:''" placeholder="Home Loan Interest" aria-describedby="homeLoanInterestHelpBlock">
+              <div class="input-group-addon">.00</div>
+            </div>
+            <div *ngIf="declarationForm.value.homeLoanInterest > 0" class="input-group col-md-4 mb-3">
+              <div class="input-group-addon">₹</div>
+              <input id="homeLoanPrincipal" type="number" class="validate form-control" max=150000 formControlName="homeLoanPrincipal" [attr.disabled]="isActiveYear?null:''" placeholder="Home Loan Principal" aria-describedby="homeLoanPrincipalHelpBlock">
+              <div class="input-group-addon">.00</div>
+            </div>
+          </div><small id="homeLoanInterestHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;House Loan Interest&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{declarationForm.value.homeLoanInterest > 0 ? 'House Loan Principal' : null}}</small>
+        </div><br>
+        <div class="input-group col-sm-3">
+          <div class="input-group-addon">₹</div>
+          <input id="phoneBill" type="number" class="validate form-control" max=18000 formControlName="phoneBill" [attr.disabled]="isActiveYear?null:''" placeholder="Telephone & Internet" aria-describedby="phoneBillHelpBlock">
+          <div class="input-group-addon">.00</div>
+        </div><small id="phoneBillHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Telephone & Internet Bills</small><br>
+        <div class="input-group col-sm-3">
+          <div class="input-group-addon">₹</div>
+          <input id="savings" type="number" class="validate form-control" max=150000 formControlName="savings" [attr.disabled]="isActiveYear?null:''" placeholder="Savings (80C)" aria-describedby="savingsHelpBlock">
+          <div class="input-group-addon">.00</div>
+        </div><small id="savingsHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Savings (80C)</small><br>
+        <div class="input-group col-sm-3">
+          <div class="input-group-addon">₹</div>
+          <input id="insurance" type="number" class="validate form-control" max=25000 formControlName="insurance" [attr.disabled]="isActiveYear?null:''" placeholder="Medical Insurence (80D)" aria-describedby="medicalInsurenceHelpBlock">
+          <div class="input-group-addon">.00</div>
+        </div><small id="medicalInsurenceHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Medical Insurence (80D)</small><br>
+        <div class="input-group col-sm-3">
+          <div class="input-group-addon">₹</div>
+          <input id="npspension" type="number" class="validate form-control" max=50000 formControlName="npspension" [attr.disabled]="isActiveYear?null:''" placeholder="NPS Atal Pension Yojana(80CCD)" aria-describedby="NPSAtalPensionYojanaHelpBlock">
+          <div class="input-group-addon">.00</div>
+        </div><small id="NPSAtalPensionYojanaHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;NPS Atal Pension Yojana(80CCD)</small><br>
+        <div class="input-group col-sm-3">
+          <div class="input-group-addon">₹</div>
+          <input id="educationLoanInterest" type="number" class="validate form-control" formControlName="educationLoan" [attr.disabled]="isActiveYear?null:''" placeholder="Education Loan Interest(80E)" aria-describedby="educationLoanHelpBlock">
+          <div class="input-group-addon">.00</div>
+        </div><small id="educationLoanHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Education Loan Interest(80E)</small><br>
+        <div class="input-group col-sm-3">
+          <button type="submit" class="btn btn-success waves-effect waves-light" [disabled]="declarationForm.invalid||!isActiveYear">Save</button>
         </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="email" type="email" class="validate form-control" required formControlName="email">
-          <label for="email">Employee Email</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="name" type="text" class="validate form-control" required formControlName="name">
-          <label for="name">Employee Name</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="pan" type="text" class="validate form-control" required maxlength="10" formControlName="pan">
-          <label for="pan">PAN Number</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <label class="center-block">Location:
-            <select class="form-control" formControlName="location" required>
-              <option *ngFor="let location of locations" [value]="location">{{location}}</option>
-            </select>
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="rent" type="number" class="validate form-control" formControlName="rent" onchange="rentError()">
-          <label for="rent">Rent per Year</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="ownerPan" type="text" class="validate form-control" maxlength="10" formControlName="ownerPan" required="{{declarationForm.value.rent >= 100000}}">
-          <label for="ownerPan">Owner Pan Number(if rent exceeds 1 lac per year)</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <label class="center-block">Sodexo:
-            <select class="form-control" formControlName="sodexo" required>
-              <option *ngFor="let sodexo of sodexoAmounts" [value]="sodexo">{{sodexo}}</option>
-            </select>
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="homeLoanInterest" type="number" class="validate form-control" max=200000 formControlName="homeLoanInterest">
-          <label for="homeLoanInterest">House Loan Interest</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="homeLoanPrincipal" type="number" class="validate form-control" max=150000 formControlName="homeLoanPrincipal">
-          <label for="homeLoanPrincipal">House Loan Principal</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="phoneBill" type="number" class="validate tooltipped form-control" max=18000 data-position="top" data-delay="50" data-class="rounded" data-tooltip="" onfocus="Materialize.toast('Help ....', 4000, 'rounded')" formControlName="phoneBill">
-          <label for="phoneBill">Telephone & Internet</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="savings" type="number" class="validate form-control" max=150000 formControlName="savings">
-          <label for="savings">Savings (80C)</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="insurance" type="number" class="validate form-control" max=25000 formControlName="insurance">
-          <label for="insurance">Medical Insurence (80D)</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="NPSPension" type="number" class="validate form-control" max=50000 formControlName="NPSPension">
-          <label for="NPSPension">NPS Atal Pension Yojana(80CCD)</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <input id="educationLoanInterest" type="number" class="validate form-control" formControlName="educationLoan">
-          <label for="educationLoanInterest">Education Loan Interest(80E)</label>
-        </div>
-      </div>
-      <div class="row">
-        <a class="btn">Save</a>
       </div>
     </div>
   </form>
 </div>
-<div class="toc-wrapper pinned" style="top: 0px;right: 10px">
-  <div class="card-panel teal white">
+<div *ngIf="declarationForm.value.year !== ''" class="sticky-top affix1 rotate-1 {{getRandomTipBackGround()}}" data-spy="affix1" data-offset-top="-1">
+  <small class="tip">Welcome to Declaration Form for {{declarationForm.value.year}}!!</small><br>
+  <h4>{{isUpdateInfo?"Existing":"New"}} User Form!!</h4>
+  <p>Name: {{declarationForm.value.name === '' ? "New User" : declarationForm.value.name}}</p>
+  <p *ngIf="declarationForm.value.email !== ''">Email: {{declarationForm.value.email === '' ? "New User" : declarationForm.value.email}}</p>
+  <p *ngIf="declarationForm.value.pan !== ''">PAN: {{declarationForm.value.pan === '' ? "New User" : declarationForm.value.pan}}</p>
+</div>
+<div class="sticky-top affix" data-spy="affix" data-offset-top="0" style="width: 380px">
+  <div class="card teal white">
     <form [formGroup]="ctcForm" class="well well-lg" (ngSubmit)="showTaxableAmount();">
       <div class="form-group well well-lg">
         <div class="row">
-          <div class="col-sm-12">
-            <div class="tax" *ngIf="taxable > 0">
-              <div class="center-block grey-text">Appx Taxable Income: <strong class="green-text">{{taxable | currency:"₹":0}}</strong></div><br/>
-              <div class="center-block grey-text">Appx Tax Amount: <strong class="green-text">{{tax | currency:"₹":0}}</strong></div><br/>
-              <div class="center-block grey-text" *ngIf="(initialTax - tax) > 0">You have saved <strong class="green-text">{{(initialTax - tax) | currency:"₹":0}}</strong> amount</div><br/>
+          <div class="input-group">
+            <div class="tax" style="font-size:11px">
+              <a tabindex="0" id="toastSuccessMessage" hidden class="btn btn-lg btn-danger" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And here's some amazing content. It's very engaging. Right?">Dismissible popover</a>
+              <span><div class="d-inline bg-dark text-white w-25 p-1">Appx Taxable Income: </div><div class="d-inline bg-success text-white w-25 p-1">{{taxable | currency:"₹":0}}</div></span><br><br>
+              <span><div class="d-inline bg-dark text-white w-25 p-1">Appx Tax Amount: </div><div class="d-inline bg-success text-white w-25 p-1">{{tax | currency:"₹":0}}</div></span><br><br>
+              <span><div class="d-inline bg-dark text-white w-25 p-1">You have saved  </div><div class="d-inline bg-success text-white w-25 p-1">{{(initialTax - tax) | currency:"₹":0}}</div><div class="d-inline bg-dark text-white w-25 p-1"> amount!!</div></span><br><br>
             </div>
-            <label class="center-block">CTC:
-              <input id="ctc" type="password" class="validate" min="250000" value="900000" class="form-control" formControlName="ctc" (focus)="showhide(true)" (focusout)="showhide(false)">
+            <div class="input-group col-sm-12">CTC:
+              <input id="ctc" type="password" class="validate form-control" formControlName="ctc" [max]="10000000" (focus)="showhide(true)" (focusout)="showhide(false)" (change)="showTaxableAmount()">
+              <span class="validity"></span>
+            </div>
+            <label class="switch-light switch-candy-blue" onclick="">
+              <input type="checkbox" class="form-control" formControlName="consultingPayRole" (change)="showTaxableAmount()">
+              <span class="alert alert-light">
+                <span>Technologies</span>
+                <span>Consulting</span>
+                <a class="btn btn-primary"></a>
+              </span>
             </label>
-            <label class="center-block">
-              <div class="switch">
-                <label>
-                  Technologies
-                  <input type="checkbox" class="form-control" formControlName="consultingPayRole">
-                  <span class="lever"></span>
-                  Consulting
-                </label>
-              </div>
-            </label>
-            <button type="submit" class="btn btn-success">Get suggestions</button>
+            <!--<button type="submit" class="btn btn-success waves-effect waves-light" [disabled]="ctcForm.invalid">Get suggestions</button>-->
           </div>
         </div>
       </div>
     </form>
-    <a *ngIf="isValid(suggestions.basic)" class="waves-effect waves-light btn-small modal-trigger right tooltipped" href="#modal1" data-position="left" data-delay="50" data-tooltip="Pay Structure"><i class="material-icons">kitchen</i></a>
-    <div class="row" style="font-size: 12px">
-      <p *ngIf="ctcLess" class="red-text">No need to submit as your CTC < 250000</p>
-      <div class="" *ngIf="!ctcLess">
-        <p class="grey-text" *ngIf="isValid(suggestions.rent)">Suggested Rent: <strong class="green-text">{{suggestions.rent | currency:"₹":0}} ({{getMonth(suggestions.rent)  | currency:"₹":0}} per Month)</strong></p>
-        <p class="grey-text" *ngIf="isValid(suggestions.phoneBills)">Suggested Phone & Internet Bills: <strong class="green-text">{{suggestions.phoneBills | currency:"₹":0}}</strong></p>
-        <p class="grey-text" *ngIf="isValid(suggestions.sodexo)">Suggested Sodexo: <strong class="green-text">{{suggestions.sodexo | currency:"₹":0}} ({{getMonth(suggestions.sodexo)  | currency:"₹":0}} per Month)</strong></p>
-        <p class="grey-text" *ngIf="isValid(suggestions.savings)">Suggested Savings(80C): <strong class="green-text">{{suggestions.savings | currency:"₹":0}}</strong></p>
-        <p class="grey-text" *ngIf="isValid(suggestions.otherInsurance)">Suggested Insurance(80D): <strong class="green-text">{{suggestions.otherInsurance | currency:"₹":0}}</strong></p>
-        <p class="grey-text" *ngIf="isValid(suggestions.NPSPension)">Suggested NPS Atal Pension Plan(80CCD): <strong class="green-text">{{suggestions.NPSPension | currency:"₹":0}}</strong></p>
-      </div>
+    <!--<button *ngIf="isValid(suggestions.basic)" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal1"><i class="glyphicon glyphicon-list-alt"></i></button>-->
+    <button *ngIf="ctcForm.value.ctc > 200000" type="button" class="btn btn-primary btn-success col-md-2 col-md-offset-10" data-toggle="modal" data-target="#exampleModalLong" style="width: 40px;"><i class="glyphicon glyphicon-align-justify"></i></button>
+    <div class="col-sm-12">
+      <p *ngIf="ctcForm.value.ctc > 0 && ctcForm.value.ctc < 250000" class="alert alert-danger" role="alert">No need to submit as your CTC < 250000</p>
+      <div class="" *ngIf="getSuggestion" style="font-size:11px">
+        <span *ngIf="isValid(suggestions.rent)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested Rent: </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.rent | currency:"₹":0}} ({{getMonth(suggestions.rent)  | currency:"₹":0}} per Month)</div></span><br><br>
+        <span *ngIf="isValid(suggestions.phoneBills)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested Phone & Internet Bills: </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.phoneBills | currency:"₹":0}}</div></span><br><br>
+        <span *ngIf="isValid(suggestions.sodexo)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested Sodexo: </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.sodexo | currency:"₹":0}} ({{getMonth(suggestions.sodexo)  | currency:"₹":0}} per Month)</div></span><br><br>
+        <span *ngIf="isValid(suggestions.savings)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested Savings(80C): </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.savings | currency:"₹":0}}</div></span><br><br>
+        <span *ngIf="isValid(suggestions.otherInsurance)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested Insurance(80D): </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.otherInsurance | currency:"₹":0}}</div></span><br><br>
+        <span *ngIf="isValid(suggestions.NPSPension)"><div class="d-inline bg-dark text-white w-25 p-1">Suggested NPS Atal Pension Plan(80CCD): </div><div class="d-inline bg-success text-white w-25 p-1">{{suggestions.NPSPension | currency:"₹":0}}</div></span><br><br>
+       </div>
     </div>
   </div>
 </div>
-<div id="modal1" class="modal modal-fixed-footer z-depth-4 modal-close">
-  <div class="modal-content">
-    <h4>Approximate Pay Structure</h4>
-    <table class="striped bordered responsive-table">
-      <thead>
-      <tr>
-        <th></th>
-        <th>Monthly</th>
-        <th>Yearly</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <th>Basic</th>
-        <td>{{getMonth(suggestions.basic) | currency:"₹":0}}</td>
-        <td>{{suggestions.basic | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>House Rent Allowance</th>
-        <td>{{getMonth(suggestions.hra) | currency:"₹":0}}</td>
-        <td>{{suggestions.hra | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Transport & Medical Allowance</th>
-        <td>{{getMonth(suggestions.stand) | currency:"₹":0}}</td>
-        <td>{{suggestions.stand | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Telephone & Internet Allowance</th>
-        <td>{{getMonth(suggestions.phone) | currency:"₹":0}}</td>
-        <td>{{suggestions.phone | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Special Allowance</th>
-        <td>{{getMonth(suggestions.spl) | currency:"₹":0}}</td>
-        <td>{{suggestions.spl | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Provident Fund</th>
-        <td>{{getMonth(suggestions.pf) | currency:"₹":0}}</td>
-        <td>{{suggestions.pf | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Professional Tax</th>
-        <td>{{getMonth(suggestions.pt) | currency:"₹":0}}</td>
-        <td>{{suggestions.pt | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Insurance</th>
-        <td>--</td>
-        <td>{{suggestions.insurance | currency:"₹":0}}</td>
-      </tr>
-      <tr>
-        <th>Gratuity</th>
-        <td>--</td>
-        <td>{{suggestions.gratuity | currency:"₹":0}}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="modal-footer">
-    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat "><i class="material-icons">close</i></a>
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content container-fluid">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Approximate Pay Structure</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th></th>
+            <th>Monthly</th>
+            <th>Yearly</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th>Basic</th>
+            <td>{{getMonth(suggestions.basic) | currency:"₹":0}}</td>
+            <td>{{suggestions.basic | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>House Rent Allowance</th>
+            <td>{{getMonth(suggestions.hra) | currency:"₹":0}}</td>
+            <td>{{suggestions.hra | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Transport & Medical Allowance</th>
+            <td>{{getMonth(suggestions.stand) | currency:"₹":0}}</td>
+            <td>{{suggestions.stand | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Telephone & Internet Allowance</th>
+            <td>{{getMonth(suggestions.phone) | currency:"₹":0}}</td>
+            <td>{{suggestions.phone | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Special Allowance</th>
+            <td>{{getMonth(suggestions.spl) | currency:"₹":0}}</td>
+            <td>{{suggestions.spl | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Provident Fund</th>
+            <td>{{getMonth(suggestions.pf) | currency:"₹":0}}</td>
+            <td>{{suggestions.pf | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Professional Tax</th>
+            <td>{{getMonth(suggestions.pt) | currency:"₹":0}}</td>
+            <td>{{suggestions.pt | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Insurance</th>
+            <td>--</td>
+            <td>{{suggestions.insurance | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Gratuity</th>
+            <td>--</td>
+            <td>{{suggestions.gratuity | currency:"₹":0}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>

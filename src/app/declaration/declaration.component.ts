@@ -1,10 +1,11 @@
-import {Component, Input, OnInit, OnChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ReturnsService} from '../service/returns.service';
 import {Declaration} from '../model/declaration';
 import {User} from '../model/user';
 import {Suggestions} from '../model/suggestions';
 import {isUndefined} from 'util';
+import {Year} from '../model/year';
 
 @Component({
   selector: 'app-declaration',
@@ -20,22 +21,31 @@ export class DeclarationComponent implements OnInit {
   processing: boolean;
   hide: boolean;
   ctcLess: boolean;
+  isUpdateInfo: boolean;
+  isNewUser: boolean;
+  isActiveYear: boolean;
   errorMessage: string;
   suggestions: Suggestions = new Suggestions;
   declaration: Declaration = new Declaration;
   rentAmount: number;
   start: boolean;
+  getSuggestion: boolean;
   toast: boolean;
   initialTax: number;
+  initialTaxable: number;
+  selectedYear: string;
+  toastSuccessMessage: string;
+  years: Year[];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private returnService: ReturnsService) {
     this.createCTCForm();
     this.createDeclaratioForm();
   }
 
-  years: string[] = ['2018-19'];
-  sodexoAmounts: string[] = ['0', '1100', '2200'];
+
+  sodexoAmounts: number[] = [0, 1100, 2200];
   locations: string[] = ['Hyderabad', 'Pune', 'Other'];
+  tipBackGround: string[] = ['lazur-bg', 'navy-bg', 'yellow-bg'];
 
   createDeclaratioForm() {
     this.declarationForm = this.fb.group({
@@ -45,7 +55,7 @@ export class DeclarationComponent implements OnInit {
       year: '',
       name: '',
       pan: '',
-      location: '',
+      location: 'Hyderabad',
       rent: 0,
       ownerPan: '',
       sodexo: 0,
@@ -54,7 +64,7 @@ export class DeclarationComponent implements OnInit {
       phoneBill: 0,
       savings: 0,
       insurance: 0,
-      NPSPension: 0,
+      npspension: 0,
       educationLoan: 0
     });
   }
@@ -65,7 +75,8 @@ export class DeclarationComponent implements OnInit {
       taxable: 0,
       tax: 0,
       initialTax: 0,
-      consultingPayRole: true
+      consultingPayRole: true,
+      technologiesPayRole: false
     });
   }
 
@@ -78,23 +89,28 @@ export class DeclarationComponent implements OnInit {
     this.ctcForm.value.tax = this.tax;
   }
 
+  getTaxAmount(num): number {
+    let tax: number = 0;
+    let s1: number = Math.min(num, 250000);
+    let s2: number = Math.min(250000, num - s1);
+    let s3: number = Math.min(500000, num - s1 - s2);
+    let s4: number = Math.min(1000000, num - s1 - s2 - s3);
+    tax = Math.round((s1 * 0) + (s2 * 0.05) + (s3 * 0.2) + (s4 * 0.3));
+    tax = (tax + (tax * 0.04));
+    return tax;
+  }
+
   get tax(): number {
     let tax: number = 0;
     if (this.ctcForm.value.ctc > 250000) {
-      let s1: number = Math.min(this.taxable, 250000);
-      let s2: number = Math.min(250000, this.taxable - s1);
-      let s3: number = Math.min(500000, this.taxable - s1 - s2);
-      let s4: number = Math.min(1000000, this.taxable - s1 - s2 - s3);
-      tax = Math.round((s1 * 0) + (s2 * 0.05) + (s3 * 0.2) + (s4 * 0.3));
-      tax = (tax + (tax * 0.04));
-      if (this.start) {
-        this.initialTax = tax;
-        // this.taxable = this.taxable - 250000;
-      }
+      this.initialTax = this.getTaxAmount(this.initialTaxable);
+      tax = this.getTaxAmount(this.taxable);
       this.ctcForm.value.tax = tax;
       this.start = false;
       if (!this.toast && tax === 0) {
-        Materialize.toast('<strong>Hurry!! You have saved complete tax amount!!</strong>', 4000, 'rounded');
+        this.toastSuccessMessage = '<strong>Hurry!! You have saved complete tax amount!!</strong>';
+        let ele: HTMLElement = document.getElementById('toastSuccessMessage');
+        ele.click();
         this.toast = true;
       }
     }
@@ -106,16 +122,17 @@ export class DeclarationComponent implements OnInit {
     if (this.ctcForm.value.ctc > 250000) {
       let gross: number = this.suggestions.basic + this.suggestions.stand + this.suggestions.phone + this.suggestions.spl + this.suggestions.hra;
       let remaining: number = gross - this.suggestions.stand;
-      taxable = remaining - this.suggestions.pt - (this.declarationForm.value.sodexo * 12);
+      taxable = remaining - this.suggestions.pt;
+      this.initialTaxable = taxable - (this.isValid(this.suggestions.pf) ? this.suggestions.pf : 0);
+      taxable = taxable - (this.declarationForm.value.sodexo * 12);
       let save: number = 0;
       let basic: number = ((this.isValid(this.suggestions.basic) ? this.suggestions.basic : 0) * 0.1);
       save = save + ((this.declarationForm.value.rent > 0 && this.declarationForm.value.rent > basic) ? Math.min(this.suggestions.hra, this.declarationForm.value.rent, (this.declarationForm.value.rent - basic)) : 0);
       save = save + Math.min(200000, this.declarationForm.value.homeLoanInterest);
       save = save + Math.min(150000, (this.declarationForm.value.homeLoanPrincipal + this.declarationForm.value.savings + (this.isValid(this.suggestions.pf) ? this.suggestions.pf : 0)));
-      console.log(this.declarationForm.value.homeLoanPrincipal + this.declarationForm.value.savings + (this.isValid(this.suggestions.pf) ? this.suggestions.pf : 0));
       save = save + Math.min(18000, this.declarationForm.value.phoneBill);
       save = save + Math.min(25000, this.declarationForm.value.insurance);
-      save = save + Math.min(50000, this.declarationForm.value.NPSPension);
+      save = save + Math.min(50000, this.declarationForm.value.npspension);
       save = save + this.declarationForm.value.educationLoan;
       taxable = taxable - save;
     }
@@ -144,20 +161,19 @@ export class DeclarationComponent implements OnInit {
   showTaxableAmount() {
     this.start = true;
     this.toast = false;
-    this.resetSuggestions();
+    // this.resetSuggestions();
     this.ctcLess = this.ctcForm.value.ctc <= 250000;
     this.updatePayStructure();
-    if (!this.ctcLess) {
+    if (this.ctcLess) {
+      this.getSuggestion = false;
+    } else {
       this.getSuggestions();
+      this.getSuggestion = true;
     }
   }
 
   getMonth(val) {
     return Math.round(val / 12);
-  }
-
-  fetchRecords() {
-
   }
 
   updatePayStructure() {
@@ -181,28 +197,40 @@ export class DeclarationComponent implements OnInit {
       let remaining: number = 0;
       if (this.taxable > 0) {
         this.suggestions.rent = Math.round(this.suggestions.basic * 0.5);
-        remaining = this.ctcForm.value.ctc - this.suggestions.hra;
+        remaining = this.taxable - 250000 - this.suggestions.hra;
+      } else {
+        this.suggestions.rent = 0;
       }
       if (remaining > 0) {
         this.suggestions.phoneBills = remaining > 18000 ? 18000 : remaining;
         remaining = remaining - this.suggestions.phoneBills;
+      } else {
+        this.suggestions.phoneBills = 0;
       }
       if (remaining > 0) {
         this.suggestions.sodexo = remaining > 13200 ? 26400 : 13200;
         remaining = remaining - this.suggestions.sodexo;
+      } else {
+        this.suggestions.sodexo = 0;
       }
       if (remaining > 0) {
         let saved = this.suggestions.pf + this.declarationForm.value.homeLoanPrincipal;
         this.suggestions.savings = saved > 150000 ? 0 : (remaining < (150000 - saved) ? remaining : (150000 - saved));
         remaining = remaining - (this.suggestions.savings + saved);
+      } else {
+        this.suggestions.savings = 0;
       }
       if (remaining > 0) {
         this.suggestions.otherInsurance = remaining > 25000 ? 25000 : remaining;
         remaining = remaining - this.suggestions.otherInsurance;
+      } else {
+        this.suggestions.otherInsurance = 0;
       }
       if (remaining > 0) {
         this.suggestions.NPSPension = remaining > 50000 ? 50000 : remaining;
         remaining = remaining - this.suggestions.NPSPension;
+      } else {
+        this.suggestions.NPSPension = 0;
       }
     }
   }
@@ -220,27 +248,13 @@ export class DeclarationComponent implements OnInit {
       phoneBill: this.declaration.phoneBill,
       savings: this.declaration.savings,
       insurance: this.declaration.insurance,
-      NPSPension: this.declaration.NPSPension,
+      npspension: this.declaration.npspension,
       educationLoan: this.declaration.educationLoan
     });
   }
 
   isValid(val) {
     return (isUndefined(val) ? false : (val > 0));
-  }
-
-  rentError() {
-    if (this.declarationForm.value.rent >= 180000) {
-      document.getElementById('rent').setAttribute('data-position', 'top');
-      document.getElementById('rent').setAttribute('data-delay', '50');
-      document.getElementById('rent').setAttribute('data-class', 'rounded');
-      document.getElementById('rent').setAttribute('data-tooltip', 'You have to submit rental agreement, if rent is more than 1.8 lacks!!');
-    } else {
-      document.getElementById('rent').removeAttribute('data-position');
-      document.getElementById('rent').removeAttribute('data-delay');
-      document.getElementById('rent').removeAttribute('data-class');
-      document.getElementById('rent').removeAttribute('data-tooltip');
-    }
   }
 
   resetSuggestions() {
@@ -254,6 +268,117 @@ export class DeclarationComponent implements OnInit {
     this.suggestions.basic = 0;
   }
 
+  getYears() {
+    this.processing = true;
+    this.returnService.getYears().subscribe(years => {
+      this.years = years;
+      this.processing = false;
+    });
+  }
+
+  saveUser() {
+    this.processing = true;
+    this.getDeclarationFormData();
+    this.returnService.saveUser(this.user).subscribe(result => {
+      if (!result)
+        this.errorMessage = 'An error occured while saving your information!!';
+      else
+        this.errorMessage = 'Hurry!! You have saved your declaration details!!';
+      this.processing = false;
+      document.documentElement.scrollTop = 0;
+    });
+  }
+
+  getDeclarationFormData() {
+    this.user.id = this.declarationForm.value.id;
+    this.user.password = this.declarationForm.value.password;
+    this.user.email = this.declarationForm.value.email;
+    this.user.name = this.declarationForm.value.name;
+    this.user.pan = this.declarationForm.value.pan;
+    this.user.location = this.declarationForm.value.location;
+    let de: Declaration = new Declaration;
+    de.year = this.declarationForm.value.year;
+    de.rent = this.declarationForm.value.rent;
+    de.ownerPan = this.declarationForm.value.ownerPan;
+    de.sodexo = +this.declarationForm.value.sodexo;
+    de.homeLoanInterest = this.declarationForm.value.homeLoanInterest;
+    de.homeLoanPrincipal = this.declarationForm.value.homeLoanPrincipal;
+    de.phoneBill = this.declarationForm.value.phoneBill;
+    de.savings = this.declarationForm.value.savings;
+    de.insurance = this.declarationForm.value.insurance;
+    de.npspension = this.declarationForm.value.npspension;
+    de.educationLoan = this.declarationForm.value.educationLoan;
+    if (this.user.declaration.length > 0) {
+      let missing = this.user.declaration.filter(item => item.year !== this.selectedYear);
+      missing.push(de);
+      this.user.declaration = missing;
+    } else {
+      this.user.declaration = [de];
+    }
+    // this.user.declarations = [];
+    console.log(this.user);
+  }
+
+  setUserAndDeclarationFormData() {
+    let de: Declaration = new Declaration;
+    if (this.user.declaration != null) {
+      let missing = this.user.declaration.filter(item => item.year === this.selectedYear);
+      if (missing.length > 0) {
+        de = missing[0];
+      }
+      this.isNewUser = missing.length === 0;
+      this.isUpdateInfo = true;
+    } else {
+      this.user.declaration = [];
+      this.isNewUser = true;
+      this.isUpdateInfo = false;
+    }
+    this.declarationForm = this.fb.group({
+      email: this.user.email,
+      id: this.user.id,
+      password: this.user.password,
+      year: this.selectedYear,
+      name: this.user.name,
+      pan: this.user.pan,
+      location: this.user.location,
+      rent: de.rent,
+      ownerPan: de.ownerPan,
+      sodexo: de.sodexo,
+      homeLoanInterest: de.homeLoanInterest,
+      homeLoanPrincipal: de.homeLoanPrincipal,
+      phoneBill: de.phoneBill,
+      savings: de.savings,
+      insurance: de.insurance,
+      npspension: de.npspension,
+      educationLoan: de.educationLoan
+    });
+  }
+
+  getUser() {
+    this.processing = true;
+    this.selectedYear = this.declarationForm.value.year;
+    if (this.declarationForm.value.id !== '' && this.declarationForm.value.password !== '') {
+      this.returnService.getUser(this.declarationForm.value.id, this.declarationForm.value.password).subscribe(userInfo => {
+        if (userInfo === null) {
+          this.errorMessage = 'Your password is invalid! Entered ID::'.concat(this.declarationForm.value.id);
+          this.declarationForm.value.year = '';
+          this.declarationForm.value.password = '';
+          this.createDeclaratioForm();
+        } else {
+          this.errorMessage = '';
+          this.user = userInfo;
+          this.setUserAndDeclarationFormData();
+        }
+        this.processing = false;
+        this.isActiveYear = this.years.filter(y => y.id === this.declarationForm.value.year)[0].active;
+      });
+    }
+  }
+
+  getRandomTipBackGround() {
+    return this.tipBackGround[Math.floor(Math.random() * this.tipBackGround.length)];
+  }
+
   ngOnInit() {
     this.hide = false;
     this.ctcLess = false;
@@ -261,6 +386,12 @@ export class DeclarationComponent implements OnInit {
     this.rentAmount = 0;
     this.initialTax = 0;
     this.toast = false;
+    this.isUpdateInfo = false;
+    this.isNewUser = false;
+    this.isActiveYear = false;
+    this.getSuggestion = false;
+    this.toastSuccessMessage = '';
     this.resetSuggestions();
+    this.getYears();
   }
 }

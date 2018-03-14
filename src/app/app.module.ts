@@ -5,12 +5,14 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { InsuranceComponent } from './insurance/insurance.component';
 import { SodexoComponent } from './sodexo/sodexo.component';
-import {ReturnsService} from "./service/returns.service";
+import {ReturnsService} from './service/returns.service';
 import { SavingsComponent } from './savings/savings.component';
 import { HraComponent } from './hra/hra.component';
 import { PreviewComponent } from './preview/preview.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { DeclarationComponent } from './declaration/declaration.component';
+import {HttpClientModule} from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { DeclarationComponent } from './declaration/declaration.component';
   ],
   imports: [
     BrowserModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [ReturnsService],
   bootstrap: [AppComponent]
