@@ -1,11 +1,12 @@
-<nav class="navbar navbar-expand-sm sticky-top fixed-top">
-  <!--<div class="container-fluid">-->
+<nav class="navbar navbar-expand-md fixed-top">
+  <!--<div class="collapse navbar-collapse">-->
     <div class="navbar-header">
       <a class="navbar-brand" href="#"><i class="glyphicon glyphicon-cog"></i> Income Tax Assistant</a>
     </div>
+  <div class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
       <li class="{{manage == 'declaration' ? 'active' : ''}}"><a (click)="select('declaration')" href="#"><span class="glyphicon glyphicon-user"></span> Declaration</a></li>
-      <!--<li class="{{manage == 'Insurance' ? 'active' : ''}}"><a (click)="select('Insurance')" href="#Insurance"><span class="glyphicon glyphicon-user"></span> Insurance</a></li>-->
+      <li class="{{manage == 'declarationv2' ? 'active' : ''}}"><a (click)="select('declarationv2')" href="#declarationv2"><span class="glyphicon glyphicon-user"></span> Declaration V2</a></li>
       <!--<li class="{{manage == 'Sodexo' ? 'active' : ''}}"><a (click)="select('Sodexo')" href="#Sodexo"><span class="glyphicon glyphicon-wrench"></span> Sodexo</a></li>-->
       <!--<li class="{{manage == 'Savings' ? 'active' : ''}}"><a (click)="select('Savings')" href="#Savings"><span class="glyphicon glyphicon-wrench"></span> Savings</a></li>-->
       <!--<li class="{{manage == 'HRA' ? 'active' : ''}}"><a (click)="select('HRA')" href="#HRA"><span class="glyphicon glyphicon-wrench"></span> HRA / Home Loan</a></li>-->
@@ -14,11 +15,12 @@
       <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
       <!--<li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>-->
     <!--</ul>-->
-  <!--</div>-->
+  </div>
 </nav>
 
 <div class="container">
   <app-declaration *ngIf="manage == 'declaration'">Loading declaration..</app-declaration>
+  <app-declarationv2 *ngIf="manage == 'declarationv2'">Loading Declaration</app-declarationv2>
   <app-insurance *ngIf="manage == 'Insurance'">Loading insurance..</app-insurance>
   <app-sodexo *ngIf="manage == 'Sodexo'">Loading sodexo..</app-sodexo>
   <app-savings *ngIf="manage == 'Savings'">Loading savings..</app-savings>

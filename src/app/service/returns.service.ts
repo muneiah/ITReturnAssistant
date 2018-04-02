@@ -7,7 +7,8 @@ import {User} from '../model/user';
 @Injectable()
 export class ReturnsService {
 
-  private static url = 'http://localhost:8888/';
+  // private static url = 'http://localhost:8888/';
+  private static url = 'http://192.168.60.75:8888/';
 
 
   constructor(private http: HttpClient) { }

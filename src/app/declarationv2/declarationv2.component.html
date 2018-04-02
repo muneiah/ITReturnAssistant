@@ -1,0 +1,632 @@
+<div class="container">
+  <div class="row">
+    <div class="col-2">
+      <div *ngIf="isSignIn || isRegister" class="affix1 rounded border-primary container-fluid navy-bg">
+        <div data-spy="affix1" data-offset-top="0">
+          <small class="tip">Welcome to Declaration Form!!</small><br>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Name
+              <span class="badge badge-primary badge-pill text-truncate">{{personalInformationForm.value.name}}</span>
+              <span *ngIf="editPersonalInfo" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('personalInformation')"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Email
+              <span class="badge badge-primary badge-pill text-truncate">{{personalInformationForm.value.email}}</span>
+              <span *ngIf="editPersonalInfo" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('personalInformation')"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              PAN
+              <span class="badge badge-primary badge-pill text-truncate" style="text-transform:uppercase">{{personalInformationForm.value.pan}}</span>
+              <span *ngIf="editPersonalInfo" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('personalInformation')"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Location
+              <span class="badge badge-primary badge-pill text-truncate">{{user.location}}</span>
+              <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('residenceInformation')"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div *ngIf="isPreviewDisplay()" class="affix2 navy-bg">
+        <div data-spy="affix2" data-offset-top="0">
+          <small class="tip">Declaration Preview for F.Y. {{currentDeclaration.year}}!!</small><br>
+          <div class="listItems" style="overflow-y: scroll;overflow-x: hidden">
+            <ul class="list-group">
+              <li *ngIf="currentDeclaration.rent > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                House Rent per Year
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.rent | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('residenceInformation')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.rent > 100000" class="list-group-item d-flex justify-content-between align-items-center">
+                Owner PAN
+                <span class="badge badge-primary badge-pill" style="text-transform:uppercase">{{currentDeclaration.ownerPan}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('residenceInformation')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.homeLoanInterest > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                House Loan Interest
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.homeLoanInterest | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('residenceInformation')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.sodexo > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                Sodexo
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.sodexo | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('sodexoCard')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.phoneBill > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                Phone & Net Bills
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.phoneBill | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('telephoneAndInternetBills')"></span>
+              </li>
+              <li *ngIf="getSavingsAmount() > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                80C - Savings
+                <span class="badge badge-primary badge-pill">{{getSavingsAmount() | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('savings')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.insurance > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                80D(Medical Insurance)
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.insurance | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('medicalInsurance')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.npspension > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                NPS Atal Pension Yojana
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.npspension | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('NPSAtalPensionYojana')"></span>
+              </li>
+              <li *ngIf="currentDeclaration.educationLoan > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                80E(Education Loan)
+                <span class="badge badge-primary badge-pill">{{currentDeclaration.educationLoan | currency:"₹":0}}</span>
+                <span *ngIf="isFinancialYearActive" class="glyphicon glyphicon-edit text-success" (click)="changeActiveSection('educationLoan')"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-7 rounded border-primary container-fluid">
+      <div class="card text-center">
+        <div *ngIf="false; else header"></div>
+        <div ngSwitch="{{getActiveSection().name}}">
+          <div *ngSwitchCase="allSections[0].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <span *ngIf="errorMessage != ''" class="text-danger"><strong>{{errorMessage}}</strong></span>
+              <form [formGroup]="loginOrRegisterForm" class="" (ngSubmit)="loginOrRegisterUser();">
+                <div class="row justify-content-md-center has-feedback">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="text" class="form-control" formControlName="id" id="id" aria-describedby="idHelp" placeholder="Employee Id" minlength="4" required>
+                      <small id="idHelp" class="form-text text-muted">Must be 4 characters long.</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="password" class="form-control" formControlName="password" aria-describedby="passwordHelp" id="password" placeholder="Password" minlength="5" required>
+                      <small id="passwordHelp" class="form-text text-muted">Must be 5 characters long.</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="reset" class="btn btn-secondary">Reset</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="loginOrRegisterForm.invalid">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[1].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="personalInformationForm" class="" (ngSubmit)="savePersonalInformation();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="text" class="form-control" formControlName="name" id="name" aria-describedby="nameHelp" placeholder="Employee Name" required>
+                      <small id="nameHelp" class="form-text text-muted">Employee Name</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="email" class="form-control" formControlName="email" aria-describedby="emailHelp" id="email" placeholder="Email" required>
+                      <small id="emailHelp" class="form-text text-muted">Employee Email</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="text" class="form-control" formControlName="pan" aria-describedby="panHelp" id="pan" placeholder="PAN Number" minlength="10" maxlength="10" required style="text-transform:uppercase">
+                      <small id="panHelp" class="form-text text-muted">Employee PAN</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button *ngIf="!editPersonalInfo" type="reset" class="btn btn-secondary">Reset</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="personalInformationForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[2].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <span *ngIf="errorMessage != ''" class="text-danger"><strong>{{errorMessage}}</strong></span>
+              <form [formGroup]="financialYearForm" class="" (ngSubmit)="selectFinancialYear();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <select class="form-control form-control-lg" formControlName="year" required aria-describedby="yearHelpBlock">
+                        <option *ngFor="let year of financialYears" [value]="year.id">{{year.id}}</option>
+                      </select>
+                      <small id="yearHelpBlock" class="form-text text-muted">Financial Year</small><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="submit" class="btn btn-success" [disabled]="financialYearForm.invalid">Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[3].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="residenceInformationForm" class="" (ngSubmit)="saveResidenceInformation();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Where do you stay?
+                    <div class="switch-toggle switch-candy-blue">
+                      <ng-container *ngFor="let location of locations">
+                        <input [id]="location" name="location" type="radio" [value]="location" formControlName="location" [attr.checked]="location === this.residenceInformationForm.value.location?'':null">
+                        <label [for]="location" onclick="">{{location}}</label>
+                      </ng-container>
+                      <a class="btn btn-primary"></a>
+                    </div>
+                  </div>
+                </div><br>
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you stay in...
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="isOwnHouse">
+                        <span class="alert alert-light">
+                          <span>Rented House</span>
+                          <span>Own House</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!residenceInformationForm.value.isOwnHouse" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="number" class="form-control" formControlName="rent" id="rent" aria-describedby="rentHelp" placeholder="Rent per Year" [required]="residenceInformationForm.value.isOwnHouse?null:''">
+                      <small id="rentHelp" class="form-text text-muted">Rent per Year</small>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="!residenceInformationForm.value.isOwnHouse && residenceInformationForm.value.rent > 100000" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="text" class="form-control" formControlName="ownerPan" id="ownerPan" aria-describedby="ownerPanHelp" placeholder="Owner PAN Number" minlength="10" maxlength="10" style="text-transform:uppercase" [required]="residenceInformationForm.value.rent > 100000?'':null">
+                      <small id="ownerPanHelp" class="form-text text-muted">Owner PAN Number</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have Home Loan?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveHomeLoan">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="residenceInformationForm.value.haveHomeLoan" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="number" class="form-control" formControlName="homeLoanInterest" id="homeLoanInterest" aria-describedby="homeLoanInterestHelp" placeholder="Home Loan Interest" max=200000 [required]="residenceInformationForm.value.haveHomeLoan?'':null">
+                      <small id="homeLoanInterestHelp" class="form-text text-muted">House Loan Interest (Max.200000)</small>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="residenceInformationForm.value.haveHomeLoan" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input type="number" class="form-control" formControlName="homeLoanPrincipal" id="homeLoanPrincipal" aria-describedby="homeLoanPrincipalHelp" placeholder="Home Loan Principal" max=150000 [required]="residenceInformationForm.value.haveHomeLoan?'':null">
+                      <small id="homeLoanPrincipalHelp" class="form-text text-muted">House Loan Principal (Max.150000 includes in 80C)</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="submit" class="btn btn-success" [disabled]="residenceInformationForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[4].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="sodexoCardForm" class="" (ngSubmit)="saveSodexoCardInformation();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have Sodexo Meal Pass Card?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveSodexoCard">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="sodexoCardForm.value.haveSodexoCard" class="row justify-content-md-center">
+                  <div class="col-sm-7">Sodexo Amount
+                    <div class="switch-toggle switch-candy-blue">
+                      <ng-container *ngFor="let sodexo of sodexoAmounts">
+                        <input [id]="sodexo" name="sodexo" type="radio" [value]="sodexo" formControlName="sodexo" [attr.checked]="sodexo === this.sodexoCardForm.value.sodexo?'':null">
+                        <label [for]="sodexo" onclick="">{{sodexo}}</label>
+                      </ng-container>
+                      <a class="btn btn-primary"></a>
+                    </div>
+                  </div>
+                </div><br>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('residenceInformation')">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="sodexoCardForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[5].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="telephoneAndInternetBillsForm" class="" (ngSubmit)="saveTelephoneAndInternetBills();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have Telephone And Internet Bills?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveTelephoneAndInternetBills">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="telephoneAndInternetBillsForm.value.haveTelephoneAndInternetBills" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input id="phoneBill" type="number" class="validate form-control" max=18000 formControlName="phoneBill" placeholder="Telephone & Internet Bills" aria-describedby="phoneBillHelpBlock" [required]="telephoneAndInternetBillsForm.value.haveTelephoneAndInternetBills?'':null">
+                      <small id="phoneBillHelpBlock" class="form-text text-muted">Telephone & Internet Bills (Max.18000)</small><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('sodexoCard')">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="telephoneAndInternetBillsForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[6].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="savingsForm" class="" (ngSubmit)="saveSavingsForm();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <div class="form-group">
+                        <input id="savings" type="number" class="validate form-control" formControlName="savings" placeholder="Savings (80C)" aria-describedby="savingsHelpBlock">
+                        <small id="savingsHelpBlock" class="form-text text-muted">80C - Savings (Max.150000 includes PF & Home Loan Principal)</small><br>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('telephoneAndInternetBills')">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="savingsForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[7].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="insuranceForm" class="" (ngSubmit)="saveInsuranceForm();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have Medical Insurance (80D)?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveInsurance">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="insuranceForm.value.haveInsurance" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input id="insurance" type="number" class="validate form-control" max=25000 formControlName="insurance" placeholder="Medical Insurance (80D)" aria-describedby="insuranceHelpBlock" [required]="insuranceForm.value.haveInsurance?'':null">
+                      <small id="insuranceHelpBlock" class="form-text text-muted">80D - Medical Insurance (Max.25000)</small><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('savings')">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="insuranceForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[8].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <form [formGroup]="NPSAtalPensionYojanaForm" class="" (ngSubmit)="saveNPSAtalPensionYojanaForm();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have NPS Atal Pension Yojana?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveNPSAtalPensionYojana">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="NPSAtalPensionYojanaForm.value.haveNPSAtalPensionYojana" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input id="NPSAtalPensionYojana" type="number" class="validate form-control" max=25000 formControlName="NPSAtalPensionYojana" placeholder="NPS Atal Pension Yojana" aria-describedby="NPSAtalPensionYojanaHelpBlock" [required]="NPSAtalPensionYojanaForm.value.haveNPSAtalPensionYojana?'':null">
+                      <small id="NPSAtalPensionYojanaHelpBlock" class="form-text text-muted">NPS Atal Pension Yojana(Max.50000)</small><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('medicalInsurance')">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="NPSAtalPensionYojanaForm.invalid">Save & Continue</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[9].name">
+            <div class="card-body">
+              <div *ngIf="false; else description"></div>
+              <span *ngIf="errorMessage != ''" class="text-danger"><strong>{{errorMessage}}</strong></span>
+              <form [formGroup]="educationLoanForm" class="" (ngSubmit)="saveEducationLoanForm();">
+                <div class="row justify-content-md-center">
+                  <div class="col-sm-7">Do you have Education Loan (80E)?
+                    <div class="form-group">
+                      <label class="switch-light switch-candy-blue" onclick="">
+                        <input type="checkbox" class="form-control" formControlName="haveEducationLoan">
+                        <span class="alert alert-light">
+                          <span>No</span>
+                          <span>Yes</span>
+                          <a class="btn btn-primary"></a>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="educationLoanForm.value.haveEducationLoan" class="row justify-content-md-center">
+                  <div class="col-sm-7">
+                    <div class="form-group">
+                      <input id="educationLoan" type="number" class="validate form-control" max=25000 formControlName="educationLoan" placeholder="Education Loan (80E)" aria-describedby="educationLoanHelpBlock" [required]="educationLoanForm.value.haveEducationLoan?'':null">
+                      <small id="educationLoanHelpBlock" class="form-text text-muted">Education Loan (80E)</small><br>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-md-center">
+                  <button type="button" class="btn btn-secondary" (click)="changeActiveSection('NPSAtalPensionYojana')" [disabled]="processing">Back</button>&emsp;&emsp;
+                  <button type="submit" class="btn btn-success" [disabled]="educationLoanForm.invalid || processing">Finish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div *ngSwitchCase="allSections[10].name">
+            <div class="card-body">
+              <h5 class="card-title text-success">{{allSections[10].description}}{{financialYearForm.value.year}}</h5><br>
+            </div>
+          </div>
+          <div *ngSwitchDefault="">
+            <h1>Switch</h1>
+            <p>Select topic from the dropdown, to switch the content of this DIV.</p>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          <div *ngIf="false; else footer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="suggestions rounded border-primary container-fluid navy-bg">
+        <div data-spy="suggestions" data-offset-top="0">
+          <small class="tip" id="showOrHide">e-Filling Suggestions!!</small><br>
+          <div id="suggestionsBox">
+            <form [formGroup]="ctcForm" class="" (ngSubmit)="showTaxableAmount();">
+              <div class="row justify-content-md-center">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <input id="ctc" placeholder="CTC" type="password" class="validate form-control" formControlName="ctc" maxlength="7" (focus)="showhide(true)" (focusout)="showhide(false)" (change)="showTaxableAmount()">
+                  </div>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label class="switch-light switch-candy-blue" onclick="">
+                      <input type="checkbox" class="form-control" formControlName="consultingPayRole" (change)="showTaxableAmount()">
+                      <span class="">
+                      <span>Technologies</span>
+                      <span>Consulting</span>
+                      <a class="btn btn-primary"></a>
+                    </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <span *ngIf="ctcForm.value.ctc > 0 && ctcForm.value.ctc < 250000" class="bg-danger" style="font-size: 11px;">No need to submit as your CTC < 250000</span>
+            <button *ngIf="ctcForm.value.ctc > 200000" type="button" class="btn btn-light col-md-offset-10" data-toggle="modal" data-target="#exampleModalLong"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+            <div *ngIf="ctcForm.value.ctc > 250000" class="suggestionsListItems" style="overflow-y: scroll;overflow-x: hidden">
+              <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-warning">
+                  Appx. Taxable Amount
+                  <span class="badge badge-primary badge-pill">{{initialTaxable | currency:"₹":0}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-warning">
+                  Appx. Tax Amount
+                  <span class="badge badge-primary badge-pill">{{initialTax | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.rent > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  Rent per Year
+                  <span class="badge badge-primary badge-pill">{{suggestions.rent | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.phoneBills > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  Phone & Net Bills
+                  <span class="badge badge-primary badge-pill">{{suggestions.phoneBills | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.sodexo > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  Sodexo
+                  <span class="badge badge-primary badge-pill">{{suggestions.sodexo | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.savings > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  80C(Savings)
+                  <span class="badge badge-primary badge-pill">{{suggestions.savings | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.otherInsurance > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  80D(Insurance)
+                  <span class="badge badge-primary badge-pill">{{suggestions.otherInsurance | currency:"₹":0}}</span>
+                </li>
+                <li *ngIf="suggestions.NPSPension > 0" class="list-group-item d-flex justify-content-between align-items-center">
+                  80CCD(NPS Atal Pension)
+                  <span class="badge badge-primary badge-pill">{{suggestions.NPSPension | currency:"₹":0}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content container-fluid">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Approximate Pay Structure</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th></th>
+            <th>Monthly</th>
+            <th>Yearly</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th>Basic</th>
+            <td>{{getMonth(suggestions.basic) | currency:"₹":0}}</td>
+            <td>{{suggestions.basic | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>House Rent Allowance</th>
+            <td>{{getMonth(suggestions.hra) | currency:"₹":0}}</td>
+            <td>{{suggestions.hra | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Transport & Medical Allowance</th>
+            <td>{{getMonth(suggestions.stand) | currency:"₹":0}}</td>
+            <td>{{suggestions.stand | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Telephone & Internet Allowance</th>
+            <td>{{getMonth(suggestions.phone) | currency:"₹":0}}</td>
+            <td>{{suggestions.phone | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Special Allowance</th>
+            <td>{{getMonth(suggestions.spl) | currency:"₹":0}}</td>
+            <td>{{suggestions.spl | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Provident Fund</th>
+            <td>{{getMonth(suggestions.pf) | currency:"₹":0}}</td>
+            <td>{{suggestions.pf | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Professional Tax</th>
+            <td>{{getMonth(suggestions.pt) | currency:"₹":0}}</td>
+            <td>{{suggestions.pt | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Insurance</th>
+            <td>--</td>
+            <td>{{suggestions.insurance | currency:"₹":0}}</td>
+          </tr>
+          <tr>
+            <th>Gratuity</th>
+            <td>--</td>
+            <td>{{suggestions.gratuity | currency:"₹":0}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #description>
+  <h5 class="card-title">{{allSections[selectedSectionIndex].description}}</h5><br>
+</ng-template>
+<ng-template #header>
+  <div *ngIf="processing" class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%"></div>
+  </div>
+  <div class="card-header">
+    <h4>{{allSections[selectedSectionIndex].title}}</h4>
+  </div>
+</ng-template>
+<ng-template #footer>
+  <div class="row">
+    <div class="col-10">
+      <div *ngIf="footerMessage != ''" class="alert alert-danger font-weight-bold" role="alert">{{footerMessage}}</div>
+    </div>
+    <div class="col-2">
+      <a *ngIf="isFinancialYearActive && selectedSectionIndex < 9" class="btn btn-info" (click)="changeActiveSection('educationLoan')"><i class="glyphicon glyphicon-fast-forward"></i></a>
+    </div>
+  </div>
+  <div *ngIf="taxable > 0">
+    <p>Appx. Taxable Amount: <span class="text-success">{{taxable | currency:"₹":0}}</span></p>
+    <p>Appx. Tax Amount: <span class="text-success">{{getTaxAmount(taxable) | currency:"₹":0}}</span></p>
+    <p>You have saved <span class="text-success">{{(initialTax - getTaxAmount(taxable)) | currency:"₹":0}}</span> amount</p>
+  </div>
+</ng-template>

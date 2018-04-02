@@ -12,6 +12,7 @@ import { PreviewComponent } from './preview/preview.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { DeclarationComponent } from './declaration/declaration.component';
 import {HttpClientModule} from '@angular/common/http';
+import { Declarationv2Component } from './declarationv2/declarationv2.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {HttpClientModule} from '@angular/common/http';
     SavingsComponent,
     HraComponent,
     PreviewComponent,
-    DeclarationComponent
+    DeclarationComponent,
+    Declarationv2Component
   ],
   imports: [
     BrowserModule,

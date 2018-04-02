@@ -36,7 +36,7 @@
         </div><small *ngIf="!isUpdateInfo" id="fullNameHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;Full Name</small><br *ngIf="!isUpdateInfo">
         <div class="input-group col-sm-3" *ngIf="!isUpdateInfo">
           <span class="input-group-addon"><i class="glyphicon glyphicon-credit-card"></i></span>
-          <input id="pan" type="text" class="validate form-control" required maxlength="10" formControlName="pan" [attr.disabled]="isUpdateInfo?'':null" placeholder="PAN Number" aria-describedby="PANHelpBlock">
+          <input id="pan" type="text" class="validate form-control" required maxlength="10" minlength="10" formControlName="pan" [attr.disabled]="isUpdateInfo?'':null" placeholder="PAN Number" aria-describedby="PANHelpBlock">
         </div><small *ngIf="!isUpdateInfo" id="PANHelpBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;PAN Number</small><br *ngIf="!isUpdateInfo">
         <div class="input-group col-sm-3">
           <fieldset>
@@ -81,7 +81,7 @@
             </div>
             <div *ngIf="declarationForm.value.rent > 100000" class="input-group col-md-4 mb-3">
               <span class="input-group-addon"><i class="glyphicon glyphicon-credit-card"></i></span>
-              <input id="ownerPan" type="text" class="validate form-control" maxlength="10" formControlName="ownerPan" required="{{declarationForm.value.rent > 100000}}" [attr.disabled]="isActiveYear?null:''" placeholder="Owner PAN" aria-describedby="ownerPanHelpBlock">
+              <input id="ownerPan" type="text" class="validate form-control" maxlength="10" formControlName="ownerPan" [attr.required]="declarationForm.value.rent > 100000?'':null" [attr.disabled]="isActiveYear?null:''" placeholder="Owner PAN" aria-describedby="ownerPanHelpBlock">
             </div>
           </div><small id="rentPerYearBlock" class="form-text text-muted">&emsp;&emsp;&emsp;&emsp;House Rent per Year&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{{declarationForm.value.rent > 100000 ? 'Owner PAN Number' : null}}</small>
         </div><br>
@@ -131,7 +131,7 @@
     </div>
   </form>
 </div>
-<div *ngIf="declarationForm.value.year !== ''" class="sticky-top affix1 rotate-1 {{getRandomTipBackGround()}}" data-spy="affix1" data-offset-top="-1">
+<div *ngIf="declarationForm.value.year !== ''" class="sticky-top affixV1 rotate-1 {{getRandomTipBackGround()}}" data-spy="affixV1" data-offset-top="-1">
   <small class="tip">Welcome to Declaration Form for {{declarationForm.value.year}}!!</small><br>
   <h4>{{isUpdateInfo?"Existing":"New"}} User Form!!</h4>
   <p>Name: {{declarationForm.value.name === '' ? "New User" : declarationForm.value.name}}</p>
@@ -151,7 +151,7 @@
               <span><div class="d-inline bg-dark text-white w-25 p-1">You have saved  </div><div class="d-inline bg-success text-white w-25 p-1">{{(initialTax - tax) | currency:"₹":0}}</div><div class="d-inline bg-dark text-white w-25 p-1"> amount!!</div></span><br><br>
             </div>
             <div class="input-group col-sm-12">CTC:
-              <input id="ctc" type="password" class="validate form-control" formControlName="ctc" [max]="10000000" (focus)="showhide(true)" (focusout)="showhide(false)" (change)="showTaxableAmount()">
+              <input id="ctc" type="password" class="validate form-control" formControlName="ctc" maxlength="7" (focus)="showhide(true)" (focusout)="showhide(false)" (change)="showTaxableAmount()">
               <span class="validity"></span>
             </div>
             <label class="switch-light switch-candy-blue" onclick="">
